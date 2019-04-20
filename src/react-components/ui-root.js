@@ -51,6 +51,7 @@ import OAuthDialog from "./oauth-dialog.js";
 import LobbyChatBox from "./lobby-chat-box.js";
 import InWorldChatBox from "./in-world-chat-box.js";
 import MicLevelWidget from "./mic-level-widget.js";
+import OutputLevelWidget from "./output-level-widget.js";
 import PresenceLog from "./presence-log.js";
 import PresenceList from "./presence-list.js";
 import SettingsMenu from "./settings-menu.js";
@@ -100,21 +101,6 @@ const isMobileVR = AFRAME.utils.device.isMobileVR();
 const isMobilePhoneOrVR = isMobile || isMobileVR;
 
 const AUTO_EXIT_TIMER_SECONDS = 10;
-
-import webmTone from "../assets/sfx/tone.webm";
-import mp3Tone from "../assets/sfx/tone.mp3";
-import oggTone from "../assets/sfx/tone.ogg";
-import wavTone from "../assets/sfx/tone.wav";
-const toneClip = document.createElement("audio");
-if (toneClip.canPlayType("audio/webm")) {
-  toneClip.src = webmTone;
-} else if (toneClip.canPlayType("audio/mpeg")) {
-  toneClip.src = mp3Tone;
-} else if (toneClip.canPlayType("audio/ogg")) {
-  toneClip.src = oggTone;
-} else {
-  toneClip.src = wavTone;
-}
 
 class UIRoot extends Component {
   willCompileAndUploadMaterials = false;
@@ -187,10 +173,6 @@ class UIRoot extends Component {
     mediaStream: null,
     audioTrack: null,
     numAudioTracks: 0,
-
-    toneInterval: null,
-    tonePlaying: false,
-
     micDevices: [],
 
     profileNamePending: "Hello",
@@ -415,23 +397,6 @@ class UIRoot extends Component {
     } else if (this.props.forcedVREntryType.startsWith("2d")) {
       this.enter2D();
     }
-  };
-
-  playTestTone = () => {
-    toneClip.currentTime = 0;
-    toneClip.play();
-    clearTimeout(this.testToneTimeout);
-    this.setState({ tonePlaying: true });
-    const toneLength = 1393;
-    this.testToneTimeout = setTimeout(() => {
-      this.setState({ tonePlaying: false });
-    }, toneLength);
-  };
-
-  stopTestTone = () => {
-    toneClip.pause();
-    toneClip.currentTime = 0;
-    this.setState({ tonePlaying: false });
   };
 
   onConcurrentLoad = () => {
@@ -674,9 +639,6 @@ class UIRoot extends Component {
         console.log("Screen sharing enabled.");
       }
     }
-
-    this.stopTestTone();
-    clearTimeout(this.testToneTimeout);
 
     this.setState({ entered: true, showInviteDialog: false });
     clearHistoryState(this.props.history);
@@ -1110,8 +1072,6 @@ class UIRoot extends Component {
   };
 
   renderAudioSetupPanel = () => {
-    const maxLevelHeight = 111;
-    const speakerClip = { clip: `rect(${this.state.tonePlaying ? 0 : maxLevelHeight}px, 111px, 111px, 0px)` };
     const subtitleId = isMobilePhoneOrVR ? "audio.subtitle-mobile" : "audio.subtitle-desktop";
     return (
       <div className="audio-setup-panel">
@@ -1131,29 +1091,7 @@ class UIRoot extends Component {
           </div>
           <div className="audio-setup-panel__levels">
             <MicLevelWidget hasAudioTrack={!!this.state.audioTrack} mediaStream={this.state.mediaStream} />
-            <WithHoverSound>
-              <div className="audio-setup-panel__levels__icon_clickable" onClick={this.playTestTone}>
-                <img
-                  src="../assets/images/level_action_background.png"
-                  srcSet="../assets/images/level_action_background@2x.png 2x"
-                  className="audio-setup-panel__levels__icon-part"
-                />
-                <img
-                  src="../assets/images/level_action_fill.png"
-                  srcSet="../assets/images/level_action_fill@2x.png 2x"
-                  className="audio-setup-panel__levels__icon-part"
-                  style={speakerClip}
-                />
-                <img
-                  src="../assets/images/speaker_level.png"
-                  srcSet="../assets/images/speaker_level@2x.png 2x"
-                  className="audio-setup-panel__levels__icon-part"
-                />
-                <div className="audio-setup-panel__levels__test_label">
-                  <FormattedMessage id="audio.click_to_test" />
-                </div>
-              </div>
-            </WithHoverSound>
+            <OutputLevelWidget />
           </div>
           {this.state.audioTrack && this.state.micDevices.length > 1 ? (
             <div className="audio-setup-panel__device-chooser">
