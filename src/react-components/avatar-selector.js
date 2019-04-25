@@ -13,7 +13,7 @@ class AvatarSelector extends Component {
     onChange: PropTypes.func
   };
 
-  state = { avatar: null, showPreview: true };
+  state = { previewAvatar: null, showPreview: true };
 
   constructor(props) {
     super(props);
@@ -35,7 +35,8 @@ class AvatarSelector extends Component {
   };
 
   avatarSelected = entry => {
-    this.setState({ avatar: { base_gltf_url: entry.url } });
+    this.props.onChange(entry.id);
+    this.setState({ previewAvatar: { base_gltf_url: entry.url } });
   };
 
   render() {
@@ -45,10 +46,13 @@ class AvatarSelector extends Component {
           {...this.props}
           showHeader={false}
           closeOnSelect={false}
+          ignoreHistory={true}
+          highlightSelected={true}
           mediaSearchStore={this.mediaSearchStore}
           onMediaSearchResultEntrySelected={this.avatarSelected}
+          selectedEntryId={this.props.avatarId}
         />
-        {this.state.showPreview && <AvatarPreview avatar={this.state.avatar} />}
+        {this.state.showPreview && <AvatarPreview avatar={this.state.previewAvatar} />}
       </div>
     );
   }

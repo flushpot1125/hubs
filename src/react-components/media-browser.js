@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { injectIntl, FormattedMessage } from "react-intl";
-import styles from "../assets/stylesheets/media-browser.scss";
 import classNames from "classnames";
-import { scaledThumbnailUrlFor } from "../utils/media-utils";
-import { pushHistoryPath, pushHistoryState, sluglessPath } from "../utils/history";
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons/faAngleLeft";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons/faAngleRight";
 import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
@@ -12,6 +9,10 @@ import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons/faCloudUploa
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import styles from "../assets/stylesheets/media-browser.scss";
+import { scaledThumbnailUrlFor } from "../utils/media-utils";
+import { pushHistoryPath, pushHistoryState, sluglessPath } from "../utils/history";
 import { SOURCES } from "../storage/media-search-store";
 import { handleTextFieldFocus, handleTextFieldBlur } from "../utils/focus-utils";
 import { showFullScreenIfWasFullScreen } from "../utils/fullscreen";
@@ -77,7 +78,10 @@ class MediaBrowser extends Component {
     hubChannel: PropTypes.object,
     onMediaSearchResultEntrySelected: PropTypes.func,
     showHeader: PropTypes.bool,
-    closeOnSelect: PropTypes.bool
+    closeOnSelect: PropTypes.bool,
+    highlightSelected: PropTypes.bool,
+    ignoreHistory: PropTypes.bool,
+    selectedEntryId: PropTypes.string
   };
 
   static defaultProps = {
@@ -85,11 +89,19 @@ class MediaBrowser extends Component {
     closeOnSelect: true
   };
 
-  state = { query: "", facets: [], showNav: true, selectNextResult: false, clearStashedQueryOnClose: false };
+  state = {
+    query: "",
+    facets: [],
+    showNav: true,
+    selectNextResult: false,
+    clearStashedQueryOnClose: false,
+    selectedEntryId: null
+  };
 
   constructor(props) {
     super(props);
     this.state = this.getStoreAndHistoryState(props);
+    this.state.selectedEntryId = props.selectedEntryId;
     this.props.mediaSearchStore.addEventListener("statechanged", this.storeUpdated);
     this.props.mediaSearchStore.addEventListener("sourcechanged", this.sourceChanged);
   }
@@ -125,6 +137,9 @@ class MediaBrowser extends Component {
     const result = props.mediaSearchStore.result;
 
     const newState = { result, query: this.state.query || searchParams.get("q") || "" };
+
+    if (props.ignoreHistory) return newState;
+
     const urlSource = searchParams.get("media_source") || sluglessPath(this.props.history.location).substring(7);
     newState.showNav = !!(searchParams.get("media_nav") !== "false");
 
@@ -178,6 +193,9 @@ class MediaBrowser extends Component {
 
   selectEntry = entry => {
     if (!this.props.onMediaSearchResultEntrySelected) return;
+    if (this.props.highlightSelected) {
+      this.setState({ selectedEntryId: entry.id });
+    }
     this.props.onMediaSearchResultEntrySelected(entry);
     if (this.props.closeOnSelect) {
       this.close();
@@ -415,8 +433,14 @@ class MediaBrowser extends Component {
       (entry.attributions && entry.attributions.publisher && entry.attributions.publisher.name) ||
       PUBLISHER_FOR_ENTRY_TYPE[entry.type];
 
+    const shouldHighlight = this.state.selectedEntryId === entry.id;
+
     return (
-      <div style={{ width: `${imageWidth}px` }} className={styles.tile} key={`${entry.id}_${idx}`}>
+      <div
+        style={{ width: `${imageWidth}px` }}
+        className={classNames(styles.tile, { [styles.highlighted]: shouldHighlight })}
+        key={`${entry.id}_${idx}`}
+      >
         <a
           href={entry.url}
           target="_blank"

@@ -89,7 +89,13 @@ class ProfileEntryPanel extends Component {
     let panelBody;
     switch (this.state.avatarType) {
       case AVATAR_TYPES.LEGACY:
-        panelBody = <AvatarSelector {...this.props} avatarId={this.state.avatarId} />;
+        panelBody = (
+          <AvatarSelector
+            {...this.props}
+            avatarId={this.state.avatarId}
+            onChange={avatarId => this.setState({ avatarId })}
+          />
+        );
         break;
       case AVATAR_TYPES.SKINNABLE:
         panelBody = (
