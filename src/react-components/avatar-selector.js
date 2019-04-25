@@ -5,6 +5,7 @@ import { injectIntl } from "react-intl";
 import MediaBrowser from "./media-browser";
 import AvatarPreview from "./avatar-preview";
 import styles from "../assets/stylesheets/avatar-selector.scss";
+import { getAvatarGltfUrl } from "../assets/avatars/avatars";
 
 class AvatarSelector extends Component {
   static propTypes = {
@@ -13,7 +14,7 @@ class AvatarSelector extends Component {
     onChange: PropTypes.func
   };
 
-  state = { previewAvatar: null, showPreview: true };
+  state = { previewAvatarGltfUrl: null, showPreview: true };
 
   constructor(props) {
     super(props);
@@ -22,7 +23,8 @@ class AvatarSelector extends Component {
     this.widthQuery = window.matchMedia("(min-width: 1200px)");
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    this.setState({ previewAvatarGltfUrl: await getAvatarGltfUrl(this.props.avatarId) });
     this.widthQuery.addListener(this.togglePreview);
   };
 
@@ -34,9 +36,9 @@ class AvatarSelector extends Component {
     this.setState({ showPreview: query.matches });
   };
 
-  avatarSelected = entry => {
+  avatarSelected = async entry => {
     this.props.onChange(entry.id);
-    this.setState({ previewAvatar: { base_gltf_url: entry.url } });
+    this.setState({ previewAvatarGltfUrl: entry.url });
   };
 
   render() {
@@ -52,7 +54,7 @@ class AvatarSelector extends Component {
           onMediaSearchResultEntrySelected={this.avatarSelected}
           selectedEntryId={this.props.avatarId}
         />
-        {this.state.showPreview && <AvatarPreview avatar={this.state.previewAvatar} />}
+        {this.state.showPreview && <AvatarPreview avatarGltfUrl={this.state.previewAvatarGltfUrl} />}
       </div>
     );
   }

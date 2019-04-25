@@ -298,7 +298,7 @@ export default class AvatarEditor extends Component {
             {/* {this.mapField("metallic_map", "Metallic Map", "image/\*", true)} */}
             {/* {this.mapField("roughness_map", "Roughness Map", "image/\*", true)} */}
           </div>
-          {preview && <AvatarPreview avatar={this.state.avatar} {...this.inputFiles} />}
+          {preview && <AvatarPreview avatarGltfUrl={this.state.avatar.base_gltf_url} {...this.inputFiles} />}
         </div>
         <div className={styles.info}>
           <FormattedMessage id="avatar-editor.info" />

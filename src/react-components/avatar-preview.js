@@ -40,7 +40,7 @@ const createImageBitmapFromURL = url =>
 
 export default class AvatarPreview extends Component {
   static propTypes = {
-    avatar: PropTypes.object
+    avatarGltfUrl: PropTypes.string
   };
   constructor(props) {
     super(props);
@@ -68,7 +68,7 @@ export default class AvatarPreview extends Component {
     this.controls.target.set(0, 0.45, 0);
     this.controls.update();
 
-    this.loadPreviewAvatar(this.props.avatar && this.props.avatar.base_gltf_url).then(this.setAvatar);
+    this.loadPreviewAvatar(this.props.avatarGltfUrl).then(this.setAvatar);
 
     const clock = new THREE.Clock();
     this.previewRenderer = createRenderer(this.canvas);
@@ -127,6 +127,7 @@ export default class AvatarPreview extends Component {
   })();
 
   resize = () => {
+    if (!this.canvas) return;
     const width = this.canvas.parentElement.offsetWidth;
     const height = this.canvas.parentElement.offsetHeight;
     this.previewRenderer.setSize(width, height);
@@ -143,12 +144,12 @@ export default class AvatarPreview extends Component {
   };
 
   componentDidUpdate = async oldProps => {
-    if (oldProps.avatar && this.props.avatar && oldProps.avatar.base_gltf_url !== this.props.avatar.base_gltf_url) {
+    if (oldProps.avatarGltfUrl !== this.props.avatarGltfUrl) {
       if (this.avatar) {
         this.scene.remove(this.avatar);
         this.avatar = null;
       }
-      await this.loadPreviewAvatar(this.props.avatar.base_gltf_url).then(this.setAvatar);
+      await this.loadPreviewAvatar(this.props.avatarGltfUrl).then(this.setAvatar);
     }
 
     this.applyMaps(oldProps, this.props);
