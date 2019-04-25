@@ -1,6 +1,6 @@
 import { EventTarget } from "event-target-shim";
 import { getReticulumFetchUrl } from "../utils/phoenix-utils";
-import { pushHistoryPath, sluglessPath, withSlug } from "../utils/history";
+import { pushHistoryPath, sluglessPath, withSlug, replaceHistoryState } from "../utils/history";
 import { avatars } from "../assets/avatars/avatars";
 
 export const SOURCES = ["videos", "sketchfab", "poly", "scenes", "gifs", "images", "twitch"];
@@ -178,6 +178,10 @@ export default class MediaSearchStore extends EventTarget {
     delete this._stashedParams.q;
   };
 
+  loadSource = source => {
+    replaceHistoryState(this.history, "mediaSource", source);
+  };
+
   sourceNavigate = source => {
     this._sourceNavigate(source, false, true);
   };
@@ -231,6 +235,9 @@ export default class MediaSearchStore extends EventTarget {
   };
 
   getUrlMediaSource = location => {
+    if (location.state && "mediaSource" in location.state) {
+      return location.state.mediaSource;
+    }
     const { search } = location;
     const urlParams = new URLSearchParams(search);
     const pathname = sluglessPath(location);

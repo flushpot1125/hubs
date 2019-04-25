@@ -19,7 +19,7 @@ class AvatarSelector extends Component {
   constructor(props) {
     super(props);
     this.mediaSearchStore = window.APP.mediaSearchStore;
-    this.mediaSearchStore.sourceNavigateWithNoNav("avatars");
+    this.mediaSearchStore.loadSource("avatars");
     this.widthQuery = window.matchMedia("(min-width: 1200px)");
   }
 
