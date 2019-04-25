@@ -22,7 +22,7 @@ function createRenderer(canvas) {
     depth: true,
     antialias: true,
     premultipliedAlpha: true,
-    preserveDrawingBuffer: true,
+    preserveDrawingBuffer: false,
     powerPreference: "default"
   });
 
