@@ -278,7 +278,7 @@ export default class AvatarEditor extends Component {
 
     return (
       <div className={classNames(styles.avatarSelectorContainer, "avatar-editor")}>
-        <div className="split">
+        <div className={classNames("split", {preview})}>
           <div className="form-body">
             {debug && this.textField("avatar_id", "Avatar ID", true)}
             {debug && this.textField("parent_avatar_id", "Parent Avatar ID")}

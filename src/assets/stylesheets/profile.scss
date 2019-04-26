@@ -19,12 +19,8 @@
   }
 
   :local(.info) {
-    display: flex;
-    justify-content: center;
     width: 100%;
-    margin: 16px;
     color: $grey-text;
-    margin-top: 40px;
 
     a {
       color: $dark-grey-text;
@@ -46,12 +42,14 @@
 
   :local(.tabs) {
     display: flex;
-    width: 25em;
+    width: 40em;
+    max-width: 100vw;
 
     a {
       padding: 8px;
       text-align: center;
       flex: 1;
+      white-space: nowrap;
       &.selected {
         font-weight: bold;
         text-decoration: underline;
@@ -89,6 +87,11 @@
     }
   }
 
+  :local(.custom-avatar-container) {
+    flex: 1;
+    text-align: center;
+  }
+
   :local(.avatar-selector-container) {
     flex: 1;
     position: relative;
@@ -100,7 +103,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow: hidden;
       .form-body {
         flex: 1;
         display: flex;
@@ -109,22 +111,12 @@
       }
       .split {
         flex: 1;
-        display: flex;
-        min-height: 240px
-      }
-      .preview{
-        position: relative;
-        margin-left: 40px;
-        .loader {
-          position: absolute;
-          left: calc(50% - 4.3em);
-          top: calc(50% - 4.5em);
+        &.preview {
+          width: 500px;
+          display: grid;
+          grid-template: 100% / 40% 60%;
         }
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-        border-radius: 20px;
+        min-height: 240px;
       }
     }
 
@@ -165,13 +157,11 @@
     min-height: 200px;
     max-width: 90vw;
     max-height: 1000px;
-    height: 90%;
 
     :local(.links) {
       display: flex;
       justify-content: center;
       width: 100%;
-      margin: 16px;
 
       a {
         margin: 0px 12px;
@@ -213,6 +203,5 @@
     @extend %bottom-action-button;
     margin: 0;
     min-height: max-content;
-    margin-top: 16px;
   }
 }

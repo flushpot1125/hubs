@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import "three/examples/js/controls/OrbitControls";
 
+import styles from "../assets/stylesheets/avatar-preview.scss";
 import { createDefaultEnvironmentMap } from "../components/environment-map";
 import { loadGLTF } from "../components/gltf-model-plus";
 import { disposeNode } from "../utils/three-utils";
@@ -235,13 +236,13 @@ export default class AvatarPreview extends Component {
 
   render() {
     return (
-      <div className="preview">
+      <div className={styles.preview}>
+        <canvas ref={c => (this.canvas = c)} />
         {this.state.loading && (
           <div className="loader">
             <div className="loader-center" />
           </div>
         )}
-        <canvas ref={c => (this.canvas = c)} />
       </div>
     );
   }

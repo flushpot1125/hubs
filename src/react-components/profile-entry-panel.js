@@ -113,7 +113,7 @@ class ProfileEntryPanel extends Component {
         break;
       case AVATAR_TYPES.URL:
         panelBody = (
-          <div>
+          <div className={styles.customAvatarContainer}>
             <label htmlFor="#custom-avatar-url">Avatar GLTF/GLB </label>
             <input
               id="custom-avatar-url"
@@ -124,7 +124,7 @@ class ProfileEntryPanel extends Component {
               onChange={e => this.setState({ avatarId: e.target.value })}
             />
             <div className={styles.info}>
-              <FormattedMessage id="profile.info" />
+              {formatMessage({ id: "profile.info" })}
               <a target="_blank" rel="noopener noreferrer" href="https://github.com/j-conrad/hubs-avatar-pipelines">
                 <FormattedMessage id="profile.info-link" />
               </a>
